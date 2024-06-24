@@ -6,6 +6,7 @@ import { Module } from "@nestjs/common";
 import { GraphQLModule } from "@nestjs/graphql";
 
 import { ConfigurationModule } from "@infrastructure/configuration/configuration.module";
+import { DatabaseModule } from "@infrastructure/database/database.module";
 import { LoggerModule } from "@infrastructure/logger/logger.module";
 
 import { QuizzModule } from "@modules/quizz/quizz.module";
@@ -18,6 +19,7 @@ import { upperDirectiveTransformer } from "@common/directives/uper-case.directiv
 
     // CORE
     ConfigurationModule,
+    DatabaseModule,
     LoggerModule,
 
     GraphQLModule.forRoot<ApolloDriverConfig>({

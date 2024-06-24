@@ -1,17 +1,16 @@
+import { Quizzes } from "@prisma/client";
+
 import { Query, Resolver } from "@nestjs/graphql";
 
 import { Quizz } from "../models/quizz.model";
+import { QuizzService } from "../services/quizz.service";
 
 @Resolver()
 export class QuizzResolver {
-  constructor() {}
+  constructor(private readonly quizzService: QuizzService) {}
 
-  @Query(() => Quizz)
-  async getQuizz(): Promise<Quizz> {
-    return {
-      id: "1",
-      title: "Quizz 1",
-      description: "This is the first quizz",
-    };
+  @Query(() => [Quizz])
+  async getQuizz(): Promise<Quizzes[]> {
+    return await this.quizzService.getQuizz();
   }
 }
