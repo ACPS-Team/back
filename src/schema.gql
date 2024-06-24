@@ -1,0 +1,15 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+directive @upper on FIELD_DEFINITION
+
+type Query {
+  getQuizz: Quizz!
+}
+
+type Quizz {
+  description: String!
+  id: ID!
+  title: String!
+}
