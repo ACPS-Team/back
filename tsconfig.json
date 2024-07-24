@@ -22,6 +22,7 @@
       "@modules/*": ["./src/modules/*"],
       "@common/*": ["./src/common/*"],
       "@infrastructure/*": ["./src/infrastructure/*"],
+      "@decorators/*": ["./src/decorators/*"],
     },
   }
 }

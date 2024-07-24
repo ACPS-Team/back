@@ -1,9 +1,9 @@
-import { Quizzes } from "@prisma/client";
+import { Args, Query, Resolver } from '@nestjs/graphql'
+import { Quizzes } from '@prisma/client'
 
-import { Query, Resolver } from "@nestjs/graphql";
-
-import { Quizz } from "../models/quizz.model";
-import { QuizzService } from "../services/quizz.service";
+import { GetQuizzById } from '../interfaces/quizz.interface'
+import { Quizz } from '../models/quizz.model'
+import { QuizzService } from '../services/quizz.service'
 
 @Resolver()
 export class QuizzResolver {
@@ -11,6 +11,11 @@ export class QuizzResolver {
 
   @Query(() => [Quizz])
   async getQuizz(): Promise<Quizzes[]> {
-    return await this.quizzService.getQuizz();
+    return await this.quizzService.getQuizz()
+  }
+
+  @Query(() => Quizz, { nullable: true })
+  async getQuizzById(@Args('id') id: string): Promise<GetQuizzById | null> {
+    return await this.quizzService.getQuizzById(id)
   }
 }

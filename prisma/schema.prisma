@@ -13,25 +13,51 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Quizzes {
-  id          String @id @default(cuid())
-  title       String
+model Plane {
+  id          String @id @default(uuid())
+  name        String
   description String
 
-  questions Questions[]
+  planeMaintenances PlaneMaintenance[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 }
 
-model Questions {
-  id       String @id @default(cuid())
+model PlaneMaintenance {
+  id          String   @id @default(uuid())
+  maintenance String
+  description String
+  date        DateTime
+
+  planeId String
+  plane   Plane  @relation(fields: [planeId], references: [id])
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
+model Quizz {
+  id          String @id @default(uuid())
+  title       String
+  description String
+
+  questions Question[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
+model Question {
+  id       String @id @default(uuid())
   question String
   answer   String
 
-  quizId  String
-  Quizzes Quizzes @relation(fields: [quizId], references: [id])
+  quizId String
+  quizz  Quizz  @relation(fields: [quizId], references: [id])
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt

@@ -6,10 +6,17 @@ directive @upper on FIELD_DEFINITION
 
 type Query {
   getQuizz: [Quizz!]!
+  getQuizzById(id: String!): Quizz
+}
+
+type Question {
+  id: ID!
+  question: String!
 }
 
 type Quizz {
   description: String!
   id: ID!
+  questions: [Question!]!
   title: String!
 }
