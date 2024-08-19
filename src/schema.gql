@@ -4,19 +4,208 @@
 
 directive @upper on FIELD_DEFINITION
 
-type Query {
-  getQuizz: [Quizz!]!
-  getQuizzById(id: String!): Quizz
-}
-
-type Question {
+type Airplane {
+  createdAt: DateTime!
   id: ID!
-  question: String!
+  incidents: [Incident!]!
+  maintenanceLogs: [Maintenance!]!
+  name: String!
+  serialNumber: String!
+  updatedAt: DateTime!
 }
 
-type Quizz {
+input CreateAirplaneDto {
+  name: String!
+  serialNumber: String!
+}
+
+input CreateIncidentDto {
+  airplaneId: ID!
+  date: DateTime!
+  description: String!
+  isAnonymized: Boolean! = false
+  mitigation: String!
+}
+
+input CreateMaintenanceDto {
+  airplaneId: ID!
+  description: String!
+  maintenanceDate: DateTime!
+}
+
+input CreateQuizDto {
+  moduleId: ID!
+  name: String!
+  questions: [CreateQuizQuestionDto!]!
+}
+
+input CreateQuizQuestionDto {
+  correctAnswer: String!
+  options: [String!]!
+  title: String!
+}
+
+input CreateQuizResultDto {
+  quizId: ID!
+  score: Int!
+}
+
+input CreateReservationDto {
+  airplaneId: ID!
+  durationEst: Int!
+  startTime: DateTime!
+}
+
+input CreateResourceDto {
+  link: String!
+  name: String!
+  type: ResourceType!
+  userId: ID
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Incident {
+  airplane: Airplane!
+  createdAt: DateTime!
+  date: DateTime!
   description: String!
   id: ID!
-  questions: [Question!]!
-  title: String!
+  isAnonymized: Boolean!
+  mitigation: String!
+  updatedAt: DateTime!
+}
+
+type Maintenance {
+  airplane: Airplane!
+  createdAt: DateTime!
+  description: String!
+  id: ID!
+  maintenanceDate: DateTime!
+  updatedAt: DateTime!
+}
+
+type Mutation {
+  createAirplane(data: CreateAirplaneDto!): Airplane!
+  createIncident(data: CreateIncidentDto!): Incident!
+  createMaintenance(data: CreateMaintenanceDto!): Maintenance!
+  createQuiz(data: CreateQuizDto!): Quiz!
+  createQuizResult(data: CreateQuizResultDto!): QuizResult!
+  createReservation(data: CreateReservationDto!): Reservation!
+  createResource(data: CreateResourceDto!): Resource!
+  deleteAirplane(id: String!): Boolean!
+  deleteIncident(id: String!): Boolean!
+  deleteMaintenance(id: String!): Boolean!
+  deleteQuiz(id: String!): Boolean!
+  deleteReservation(id: String!): Boolean!
+  deleteResource(id: String!): Boolean!
+  updateAirplane(data: UpdateAirplaneDto!, id: String!): Airplane!
+  updateIncident(data: UpdateIncidentDto!, id: String!): Incident!
+  updateMaintenance(data: UpdateMaintenanceDto!, id: String!): Maintenance!
+  updateQuiz(data: UpdateQuizDto!, id: String!): Quiz!
+  updateReservation(data: UpdateReservationDto!, id: String!): Reservation!
+  updateResource(data: UpdateResourceDto!, id: String!): Resource!
+}
+
+type Query {
+  getAirplaneById(id: String!): Airplane!
+  getAllAirplanes: [Airplane!]!
+  getAllIncidents: [Incident!]!
+  getAllMaintenances: [Maintenance!]!
+  getAllReservations(startDate: DateTime): [Reservation!]!
+  getAllResources: [Resource!]!
+  getIncidentsByAirplaneId(airplaneId: String!): [Incident!]!
+  getMaintenancesByAirplaneId(airplaneId: String!): [Maintenance!]!
+  getMyReservations(startDate: DateTime): [Reservation!]!
+  getMyResources: [Resource!]!
+  getQuiz(id: String!): Quiz!
+  getQuizResults: [QuizResult!]!
+  getQuizzes: [Quiz!]!
+}
+
+type Quiz {
+  createdAt: DateTime!
+  id: ID!
+  name: String!
+  updatedAt: DateTime!
+}
+
+type QuizResult {
+  createdAt: DateTime!
+  id: ID!
+  quiz: Quiz!
+  score: Float!
+}
+
+type Reservation {
+  airplane: Airplane!
+  createdAt: DateTime!
+  durationEst: Int!
+  durationReal: Int
+  id: ID!
+  startTime: DateTime!
+  status: ReservationStatus!
+  updatedAt: DateTime!
+}
+
+"""Status of a reservation"""
+enum ReservationStatus {
+  CANCELED
+  CONFIRMED
+  PENDING
+}
+
+type Resource {
+  createdAt: DateTime!
+  id: ID!
+  link: String!
+  name: String!
+  type: ResourceType!
+  updatedAt: DateTime!
+}
+
+"""Type of a resource"""
+enum ResourceType {
+  DIPLOMA
+  DOCUMENT
+  INVOICE
+  TUTORIAL
+}
+
+input UpdateAirplaneDto {
+  name: String
+  serialNumber: String
+}
+
+input UpdateIncidentDto {
+  date: DateTime
+  description: String
+  isAnonymized: Boolean
+  mitigation: String
+}
+
+input UpdateMaintenanceDto {
+  description: String
+  maintenanceDate: DateTime
+}
+
+input UpdateQuizDto {
+  name: String
+}
+
+input UpdateReservationDto {
+  airplaneId: ID
+  durationEst: Int
+  durationReal: Int
+  status: ReservationStatus
+}
+
+input UpdateResourceDto {
+  link: String
+  name: String
+  type: ResourceType
+  userId: ID
 }

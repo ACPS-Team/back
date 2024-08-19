@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,53 +7,226 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Plane {
-  id          String @id @default(uuid())
+model User {
+  id String @id @default(uuid())
+
+  clerkId String   @unique // unique ID from clerk 
+  role    UserRole
+
+  memberships  Membership[]
+  attendances  Attendance[]
+  quizResults  QuizResult[]
+  reservations Reservation[]
+  maintenances Maintenance[]
+  incidents    Incident[]
+  Resource     Resource[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Membership {
+  id String @id @default(uuid())
+
+  startDate DateTime
+  endDate   DateTime
+  isActive  Boolean  @default(true)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TrainingCourse {
+  id String @id @default(uuid())
+
   name        String
-  description String
+  description String?
 
-  planeMaintenances PlaneMaintenance[]
+  modules TrainingModule[]
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-model PlaneMaintenance {
-  id          String   @id @default(uuid())
-  maintenance String
-  description String
-  date        DateTime
+model TrainingModule {
+  id String @id @default(uuid())
 
-  planeId String
-  plane   Plane  @relation(fields: [planeId], references: [id])
+  name        String
+  description String?
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  courseId String
+  course   TrainingCourse @relation(fields: [courseId], references: [id])
+
+  quizzes     Quiz[]
+  attendances Attendance[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-model Quizz {
-  id          String @id @default(uuid())
-  title       String
-  description String
+model Attendance {
+  id String @id @default(uuid())
 
-  questions Question[]
+  date          DateTime
+  status        AttendanceStatus
+  justification String?
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  userId   String
+  user     User           @relation(fields: [userId], references: [id])
+  moduleId String
+  module   TrainingModule @relation(fields: [moduleId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-model Question {
-  id       String @id @default(uuid())
-  question String
-  answer   String
+model Quiz {
+  id   String @id @default(uuid())
+  name String
+
+  moduleId String
+  module   TrainingModule @relation(fields: [moduleId], references: [id])
+
+  questions QuizQuestion[]
+  results   QuizResult[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model QuizQuestion {
+  id            String   @id @default(uuid())
+  title         String
+  options       String[] // Array of options for the question ["Option 1", "Option 2", "Option 3"]
+  correctAnswer String
 
   quizId String
-  quizz  Quizz  @relation(fields: [quizId], references: [id])
+  quiz   Quiz   @relation(fields: [quizId], references: [id])
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model QuizResult {
+  id    String @id @default(uuid())
+  score Int
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+  quizId String
+
+  quiz Quiz @relation(fields: [quizId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Reservation {
+  id String @id @default(uuid())
+
+  startTime    DateTime
+  durationEst  Int // Duration in minutes
+  durationReal Int? // Duration in minutes
+  status       ReservationStatus @default(PENDING)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  airplaneId String
+  airplane   Airplane @relation(fields: [airplaneId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Resource {
+  id String @id @default(uuid())
+
+  name String
+  type ResourceType
+  link String
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Maintenance {
+  id String @id @default(uuid())
+
+  description     String
+  maintenanceDate DateTime
+
+  airplaneId String
+  airplane   Airplane @relation(fields: [airplaneId], references: [id])
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Airplane {
+  id String @id @default(uuid())
+
+  name         String
+  serialNumber String @unique
+
+  maintenanceLogs Maintenance[]
+  reservations    Reservation[]
+  incidents       Incident[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Incident {
+  id String @id @default(uuid())
+
+  description  String
+  date         DateTime
+  mitigation   String
+  isAnonymized Boolean  @default(true)
+
+  reporterId String
+  reporter   User   @relation(fields: [reporterId], references: [id])
+
+  airplaneId String
+  airplane   Airplane @relation(fields: [airplaneId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum UserRole {
+  ADMIN
+  INSTRUCTOR
+  STUDENT
+  MEMBER
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  EXCUSED
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CANCELED
+}
+
+enum ResourceType {
+  DIPLOMA
+  INVOICE
+  DOCUMENT
+  TUTORIAL
 }
