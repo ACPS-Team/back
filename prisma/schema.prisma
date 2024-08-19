@@ -16,10 +16,12 @@ model User {
   memberships  Membership[]
   attendances  Attendance[]
   quizResults  QuizResult[]
-  reservations Reservation[]
   maintenances Maintenance[]
   incidents    Incident[]
-  Resource     Resource[]
+  resource     Resource[]
+
+  reservationsPilot      Reservation[] @relation("Pilot")
+  reservationsInstructor Reservation[] @relation("Instructor")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -44,8 +46,14 @@ model TrainingCourse {
 
   name        String
   description String?
+  startDate   DateTime
+  duration    Int
+  finished_at DateTime?
 
-  modules TrainingModule[]
+  attendances Attendance[]
+
+  moduleId String
+  module   TrainingModule @relation(fields: [moduleId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -57,11 +65,8 @@ model TrainingModule {
   name        String
   description String?
 
-  courseId String
-  course   TrainingCourse @relation(fields: [courseId], references: [id])
-
-  quizzes     Quiz[]
-  attendances Attendance[]
+  quizzes Quiz[]
+  courses TrainingCourse[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -70,14 +75,13 @@ model TrainingModule {
 model Attendance {
   id String @id @default(uuid())
 
-  date          DateTime
-  status        AttendanceStatus
-  justification String?
+  status AttendanceStatus?
 
-  userId   String
-  user     User           @relation(fields: [userId], references: [id])
-  moduleId String
-  module   TrainingModule @relation(fields: [moduleId], references: [id])
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  courseId String
+  course   TrainingCourse @relation(fields: [courseId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -111,14 +115,15 @@ model QuizQuestion {
 }
 
 model QuizResult {
-  id    String @id @default(uuid())
+  id String @id @default(uuid())
+
   score Int
 
   userId String
   user   User   @relation(fields: [userId], references: [id])
-  quizId String
 
-  quiz Quiz @relation(fields: [quizId], references: [id])
+  quizId String
+  quiz   Quiz   @relation(fields: [quizId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -127,13 +132,16 @@ model QuizResult {
 model Reservation {
   id String @id @default(uuid())
 
-  startTime    DateTime
-  durationEst  Int // Duration in minutes
-  durationReal Int? // Duration in minutes
-  status       ReservationStatus @default(PENDING)
+  startDate      DateTime
+  duration       Int // Duration in minutes
+  flightDuration Int
+  finished_at    DateTime?
 
   userId String
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], name: "Pilot")
+
+  instructorId String
+  instructor   User   @relation(fields: [instructorId], references: [id], name: "Instructor")
 
   airplaneId String
   airplane   Airplane @relation(fields: [airplaneId], references: [id])
@@ -216,12 +224,6 @@ enum AttendanceStatus {
   ABSENT
   LATE
   EXCUSED
-}
-
-enum ReservationStatus {
-  PENDING
-  CONFIRMED
-  CANCELED
 }
 
 enum ResourceType {

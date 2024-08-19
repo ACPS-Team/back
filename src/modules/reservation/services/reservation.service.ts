@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { Reservation, ReservationStatus } from '@prisma/client'
+import { Reservation } from '@prisma/client'
 
 import { PrismaService } from '@infrastructure/database/services/prisma.service'
 
@@ -11,7 +11,7 @@ export class ReservationService {
 
   async getAllReservations(startDate?: Date): Promise<Reservation[]> {
     return this.prismaService.reservation.findMany({
-      where: startDate ? { startTime: { gte: startDate } } : {}
+      where: startDate ? { startDate: { gte: startDate } } : {}
     })
   }
 
@@ -19,7 +19,7 @@ export class ReservationService {
     return this.prismaService.reservation.findMany({
       where: {
         userId,
-        startTime: startDate ? { gte: startDate } : {}
+        startDate: startDate ? { gte: startDate } : {}
       }
     })
   }
@@ -27,10 +27,12 @@ export class ReservationService {
   async createReservation(data: CreateReservationDto, userId: string): Promise<Reservation> {
     await this.prismaService.airplane.findUniqueOrThrow({ where: { id: data.airplaneId } })
 
+    await this.prismaService.user.findUniqueOrThrow({ where: { id: data.instructorId } })
+
     return this.prismaService.reservation.create({
       data: {
         ...data,
-        userId: userId
+        userId
       }
     })
   }
@@ -47,10 +49,7 @@ export class ReservationService {
   async deleteReservation(id: string): Promise<boolean> {
     await this.prismaService.reservation.findUniqueOrThrow({ where: { id } })
 
-    await this.prismaService.reservation.update({
-      where: { id },
-      data: { status: ReservationStatus.CANCELED }
-    })
+    await this.prismaService.reservation.delete({ where: { id } })
     return true
   }
 }

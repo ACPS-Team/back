@@ -28,6 +28,8 @@ export class MaintenanceService {
   }
 
   async updateMaintenance(id: string, data: UpdateMaintenanceDto): Promise<Maintenance> {
+    await this.prismaService.maintenance.findUniqueOrThrow({ where: { id } })
+
     return this.prismaService.maintenance.update({
       where: { id },
       data

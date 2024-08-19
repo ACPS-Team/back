@@ -1,5 +1,4 @@
-import { Field, ID, Int, ObjectType, registerEnumType } from '@nestjs/graphql'
-import { ReservationStatus } from '@prisma/client'
+import { Field, ID, Int, ObjectType } from '@nestjs/graphql'
 
 import { Airplane } from '@modules/airplane/models/airplane.model'
 
@@ -11,22 +10,25 @@ export class Reservation {
   id: string
 
   @Field()
-  startTime: Date
+  startDate: Date
 
   @Field(() => Int)
-  durationEst: number
+  duration: number
 
-  @Field(() => Int, { nullable: true })
-  durationReal?: number
+  @Field(() => Int)
+  flightDuration: number
+
+  @Field(() => Date)
+  finished_at: Date
 
   // @Field(() => User)
   // user: User  // TODO: Uncomment this line
 
+  // @Field(() => User)
+  // instructor: User  // TODO: Uncomment this line
+
   @Field(() => Airplane)
   airplane: Airplane
-
-  @Field(() => ReservationStatus)
-  status: ReservationStatus
 
   @Field()
   createdAt: Date
@@ -34,8 +36,3 @@ export class Reservation {
   @Field()
   updatedAt: Date
 }
-
-registerEnumType(ReservationStatus, {
-  name: 'ReservationStatus',
-  description: 'Status of a reservation'
-})

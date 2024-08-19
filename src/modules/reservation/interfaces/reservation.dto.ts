@@ -1,13 +1,18 @@
 import { Field, ID, InputType, Int } from '@nestjs/graphql'
-import { ReservationStatus } from '@prisma/client'
 
 @InputType()
 export class CreateReservationDto {
   @Field()
-  startTime: Date
+  startDate: Date
 
   @Field(() => Int)
-  durationEst: number
+  duration: number
+
+  @Field(() => Int)
+  flightDuration: number
+
+  @Field(() => ID)
+  instructorId: string
 
   @Field(() => ID)
   airplaneId: string
@@ -15,15 +20,21 @@ export class CreateReservationDto {
 
 @InputType()
 export class UpdateReservationDto {
-  @Field(() => Int, { nullable: true })
-  durationEst?: number
+  @Field({ nullable: true })
+  startDate: Date
 
   @Field(() => Int, { nullable: true })
-  durationReal?: number
+  duration: number
+
+  @Field(() => Int, { nullable: true })
+  flightDuration: number
+
+  @Field({ nullable: true })
+  isFinished: boolean
+
+  @Field(() => ID, { nullable: true })
+  instructorId?: string
 
   @Field(() => ID, { nullable: true })
   airplaneId?: string
-
-  @Field(() => ReservationStatus, { nullable: true })
-  status?: ReservationStatus
 }

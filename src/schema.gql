@@ -52,8 +52,10 @@ input CreateQuizResultDto {
 
 input CreateReservationDto {
   airplaneId: ID!
-  durationEst: Int!
-  startTime: DateTime!
+  duration: Int!
+  flightDuration: Int!
+  instructorId: ID!
+  startDate: DateTime!
 }
 
 input CreateResourceDto {
@@ -143,19 +145,12 @@ type QuizResult {
 type Reservation {
   airplane: Airplane!
   createdAt: DateTime!
-  durationEst: Int!
-  durationReal: Int
+  duration: Int!
+  finished_at: DateTime!
+  flightDuration: Int!
   id: ID!
-  startTime: DateTime!
-  status: ReservationStatus!
+  startDate: DateTime!
   updatedAt: DateTime!
-}
-
-"""Status of a reservation"""
-enum ReservationStatus {
-  CANCELED
-  CONFIRMED
-  PENDING
 }
 
 type Resource {
@@ -198,9 +193,11 @@ input UpdateQuizDto {
 
 input UpdateReservationDto {
   airplaneId: ID
-  durationEst: Int
-  durationReal: Int
-  status: ReservationStatus
+  duration: Int
+  flightDuration: Int
+  instructorId: ID
+  isFinished: Boolean
+  startDate: DateTime
 }
 
 input UpdateResourceDto {

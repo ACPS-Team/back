@@ -57,6 +57,7 @@ export class QuizService {
     await this.prismaService.quiz.delete({
       where: { id }
     })
+
     return true
   }
 
