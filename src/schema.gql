@@ -123,7 +123,7 @@ type Query {
   getMaintenancesByAirplaneId(airplaneId: String!): [Maintenance!]!
   getMyReservations(startDate: DateTime): [Reservation!]!
   getMyResources: [Resource!]!
-  getQuiz(id: String!): Quiz!
+  getQuiz(id: String!): QuizWithQuestion!
   getQuizResults: [QuizResult!]!
   getQuizzes: [Quiz!]!
 }
@@ -135,11 +135,25 @@ type Quiz {
   updatedAt: DateTime!
 }
 
+type QuizQuestion {
+  id: ID!
+  options: [String!]!
+  title: String!
+}
+
 type QuizResult {
   createdAt: DateTime!
   id: ID!
   quiz: Quiz!
   score: Float!
+}
+
+type QuizWithQuestion {
+  createdAt: DateTime!
+  id: ID!
+  name: String!
+  questions: [QuizQuestion!]!
+  updatedAt: DateTime!
 }
 
 type Reservation {

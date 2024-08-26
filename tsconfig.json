@@ -23,6 +23,7 @@
       "@common/*": ["./src/common/*"],
       "@infrastructure/*": ["./src/infrastructure/*"],
       "@decorators/*": ["./src/decorators/*"],
+      "@utils/*": ["./src/utils/*"],
     },
   }
 }

@@ -1,7 +1,9 @@
-import { Injectable } from '@nestjs/common'
+import { ConflictException, Injectable } from '@nestjs/common'
 import { Reservation } from '@prisma/client'
 
 import { PrismaService } from '@infrastructure/database/services/prisma.service'
+
+import { minuteInMs } from '@utils/time-constants'
 
 import { CreateReservationDto, UpdateReservationDto } from '../interfaces/reservation.dto'
 
@@ -25,7 +27,22 @@ export class ReservationService {
   }
 
   async createReservation(data: CreateReservationDto, userId: string): Promise<Reservation> {
-    await this.prismaService.airplane.findUniqueOrThrow({ where: { id: data.airplaneId } })
+    const airplane = await this.prismaService.airplane.findUniqueOrThrow({
+      where: { id: data.airplaneId },
+      select: {
+        reservations: {
+          where: {
+            startDate: {
+              gte: data.startDate,
+              lte: new Date(data.startDate.getTime() + data.duration * minuteInMs)
+            }
+          }
+        }
+      }
+    })
+
+    if (airplane.reservations.length)
+      throw new ConflictException('Airplane is already reserved for this time')
 
     await this.prismaService.user.findUniqueOrThrow({ where: { id: data.instructorId } })
 

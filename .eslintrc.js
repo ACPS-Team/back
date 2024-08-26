@@ -143,7 +143,7 @@ module.exports = {
               ["^(@infrastructure)(/.*|$)"],
               ['^(@modules)(/.*|$)'],
               ['^(@common)(/.*|$)'],
-              ['^(@helpers)(/.*|$)'],
+              ['^(@utils)(/.*|$)'],
               ['^(@decorators)(/.*|$)'],
             ]
           }

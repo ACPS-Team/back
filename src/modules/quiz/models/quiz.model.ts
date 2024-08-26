@@ -30,9 +30,21 @@ export class QuizQuestion {
 
   @Field(() => [String])
   options: string[]
+}
 
-  @Field(() => Quiz)
-  quiz: Quiz
+@ObjectType()
+export class QuizWithQuestion {
+  @Field(() => ID)
+  id: string
+
+  @Field()
+  name: string
+
+  // @Field(() => Module)
+  // module: Module // TODO: Uncomment this line
+
+  @Field(() => [QuizQuestion])
+  questions: QuizQuestion[]
 
   @Field()
   createdAt: Date

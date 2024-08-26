@@ -1,7 +1,7 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 
 import { CreateQuizDto, CreateQuizResultDto, UpdateQuizDto } from '../interfaces/quiz.dto'
-import { Quiz, QuizResult } from '../models/quiz.model'
+import { Quiz, QuizResult, QuizWithQuestion } from '../models/quiz.model'
 import { QuizService } from '../services/quiz.service'
 
 @Resolver(() => Quiz)
@@ -13,7 +13,7 @@ export class QuizResolver {
     return this.quizService.getAllQuizzes()
   }
 
-  @Query(() => Quiz)
+  @Query(() => QuizWithQuestion)
   async getQuiz(@Args('id') id: string) {
     return this.quizService.getQuizById(id)
   }

@@ -6,7 +6,7 @@ export class CreateReservationDto {
   startDate: Date
 
   @Field(() => Int)
-  duration: number
+  duration: number // in minutes
 
   @Field(() => Int)
   flightDuration: number
