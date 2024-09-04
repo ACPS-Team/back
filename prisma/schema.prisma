@@ -48,7 +48,7 @@ model TrainingCourse {
   description String?
   startDate   DateTime
   duration    Int
-  finished_at DateTime?
+  finishedAt  DateTime?
 
   attendances Attendance[]
 
@@ -135,7 +135,7 @@ model Reservation {
   startDate      DateTime
   duration       Int // Duration in minutes
   flightDuration Int
-  finished_at    DateTime?
+  finishedAt     DateTime?
 
   userId String
   user   User   @relation(fields: [userId], references: [id], name: "Pilot")

@@ -53,7 +53,7 @@ export class CourseService {
       where: { id },
       data: {
         ...data,
-        finished_at: isFinished ? new Date() : undefined
+        finishedAt: isFinished ? new Date() : undefined
       }
     })
   }
